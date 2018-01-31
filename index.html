@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body id="bodysimulacija">
+<h1 id="h1simulacija"> Leicester City - Sezona 2015/2016 </h1>
+<script>
+var radius = 74;
+var border = 2;
+var outerRadius = 200;
+var innerRadius = 0;
+var pobjede = false;
+var nerjeseno = false;
+var porazi = false;
+var i = 0;
+var color = d3.scale.ordinal()
+.range(["#00FF00", "#FFFF00", "#FF0000"]);
+
+//-------------------------------------------
+
+var dataset = [
+	{name: 'Pobjede', value: 23},
+	{name: 'Nerjeseno', value: 12},
+	{name: 'Porazi', value: 3}];
+
+
+var dobiveneUtakmice = [
+  {"name": "08.08.15 Leicester  4:2 Sunderland"}, 
+  {"name": "15.08.15 West Ham 1:2 Leicester"}, 
+  {"name": "13.09.15 Leicester 3:2 Aston Villa"}, 
+  {"name": "03.10.15 Norwich 1:2 Leicester"}, 
+  {"name": "24.10.15 Leicester 1:0 Crystal Palace"}, 
+  {"name": "31.10.15 WBA 2:3 Leicester"}, 
+  {"name": "07.11.15 Leicester 2:1 Watford"}, 
+  {"name": "21.11.15 Newcastle 0:3 Leicester"}, 
+  {"name": "05.12.15 Swansea 0:3 Leicester"}, 
+  {"name": "14.12.15 Leicester 2:1 Chelsea"}, 
+  {"name": "19.12.15 Everton 2:3 Leicester"}, 
+  {"name": "13.01.16 Tottenham 0:1 Leicester"}, 
+  {"name": "23.01.16 Leicester 3:0 Stoke"}, 
+  {"name": "02.02.16 Leicester 2:0 Liverpool"}, 
+  {"name": "06.02.16 Man. City 1:3 Leicester"}, 
+  {"name": "27.02.16 Leicester 1:0 Norwich"}, 
+  {"name": "05.03.16 Watford 0:1 Leicester"}, 
+  {"name": "14.03.16 Leicester 1:0 Newcastle"}, 
+  {"name": "03.04.16 Leicester 1:0 Southampton"}, 
+  {"name": "10.04.16 Sunderland 0:2 Leicester"}, 
+  {"name": "24.04.16 Leicester 4:0 Swansea"},
+  {"name": "07.05.16 Leicester 3:1 Everton"}];
+
+var nerjeseneUtakmice = [
+  {"name": "22.08.15 Leicester  1:1 Tottenham"}, 
+  {"name": "29.08.15 Bournemouth 1:1 Leicester"}, 
+  {"name": "19.09.15 Stoke 2:2 Leicester"}, 
+  {"name": "17.10.15 Southampton 2:2 Leicester"}, 
+  {"name": "28.11.15 Leicester 1:1 Manchester Utd."}, 
+  {"name": "29.12.15 Leicester 0:0 Man. City"}, 
+  {"name": "02.01.16 Leicester 0:0 Bournemouth"}, 
+  {"name": "16.01.16 Aston Villa 1:1 Leicester"},
+  {"name": "01.03.16 Leicester 2:2 WBA"}, 
+  {"name": "17.04.16 Leicester 2:2 West Ham"}, 
+  {"name": "01.05.16 Manchester Utd. 1:1 Leicester"},
+  {"name": "15.05.16 Chelsea 1:1 Leicester"}];  
+
+var izgubljeneUtakmice = [
+  {"name": "26.09.15 Leicester  2:5 Arsenal"}, 
+  {"name": "26.12.15 Liverpool 1:0 Leicester"}, 
+  {"name": "14.02.16 Arsenal 2:1 Leicester"}]; 
+
+//-----------------------------------------------------------
+var glavni = d3.select("body")
+.append("div")
+.attr("class", "glavni");
+
+var svg = d3.select("div.glavni")
+.append("svg")
+.attr("class", "svgStatistika")
+.attr("width", 700)
+.attr("height", 900);
+
+var rezultati = d3.select("div.glavni")
+.append("div")
+.attr("class", "rezultati");
+
+
+var naslov = rezultati.append("h2")
+.text("Rezultati");
+
+
+var arcOver = d3.svg.arc()
+    .outerRadius(200 + 10);
+
+var arc = d3.svg.arc()
+.innerRadius(innerRadius)
+.outerRadius(outerRadius);
+
+var pie = d3.layout.pie()
+.value(function(d) { return d.value; });
+
+var piechart = svg.selectAll("g.pie")     //dodijeljivanje podatka svakom segmentu pie charta
+ .data(pie(dataset))
+ .enter()
+ .append("g")
+ .attr("class", "pie")
+ .attr("transform", "translate(" + 350 + ", " + 450 + ")");
+
+
+//funkcija za promjenu boje nakon pomicanja miša na pojedini segment pie charta, http://stackoverflow.com/questions/26234361/d3-js-pie-chart-can-pie-slice-move-when-selected
+ piechart.append("path")
+ .attr("fill", function(d, i) { return color(i); })
+ .attr("d", arc)
+ .attr("stroke", "#FFF")
+ .attr("stroke-width", 2)
+ .on("mouseover", function(d) {  
+        d3.select(this)
+           .attr("stroke","#FFF")
+           .transition()
+           .duration(300)
+           .attr("d", arcOver)             
+           .attr("stroke-width",4)
+           .attr("fill-opacity", 0.5);
+    })
+ .on("mouseleave", function(d) {
+        d3.select(this).transition()            
+           .attr("d", arc)
+           .attr("stroke-width", 2)
+           .attr("fill-opacity", 1);});
+
+
+
+
+// dodavanje teksta na svaki segment pie charta
+  piechart.append("text")
+ .attr("transform", function(d) { return "translate(" + arc.centroid(d)
++ ")"; })
+ .attr("text-anchor", "middle")
+ .data(dataset)
+ .text(function(d) { return d.name});
+
+ 
+//legenda
+ var legend = d3.select("svg").append("g")
+      .attr("class", "legend")
+      .attr("width", radius * 2)
+      .attr("height", radius * 2)
+    .selectAll("g")
+      .data(color.domain().slice())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 30 + ")"; });
+
+  legend.append("rect")
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("x", 40)
+      .attr("y", 60)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", 70)
+      .attr("y", 71)
+      .attr("dy", "5pt")
+      .data(dataset)
+      .text(function(d) { return d.name+": "+d.value; });
+
+  var text = svg.append("text")
+  .attr("x", 20)
+  .attr("y", 40)
+  .text("Legenda: ");
+
+
+// funkcija za prikaz rezultata nakon klika na pojedini segment
+
+
+piechart.on("click", function(d){
+  d3.selectAll("g.pie")
+  .data(pie(dataset))
+  if(d.value == 23 && pobjede == false)
+  {
+    rezultati.selectAll("input").remove();
+    rezultati.selectAll("text").remove();
+    rezultati.selectAll("text")
+    .data(dobiveneUtakmice)
+    .enter()
+    .append("text")
+    .html(function(d){return d.name + "<br>";});
+    pobjede = true;
+    nerjeseno = false;
+    porazi = false;
+  }
+  
+  if (d.value == 12 && nerjeseno == false)
+  {
+    rezultati.selectAll("text").remove();
+    rezultati.selectAll("text")
+    .data(nerjeseneUtakmice)
+    .enter()
+    .append("text")
+    .html(function(d){return d.name + "<br>";});
+    nerjeseno = true;
+    pobjede = false;
+    porazi = false;
+
+    rezultati.append("a")
+    .attr("link:href", "simulacija_gola.html")
+    .append("input")
+    .attr("class","button")
+    .attr("type", "button")
+    .attr("value", "Simuliraj golove");
+
+
+  }
+
+  if(d.value == 3 && porazi == false) 
+  {
+    rezultati.selectAll("input").remove();
+    rezultati.selectAll("text").remove();
+    rezultati.selectAll("text")
+    .data(izgubljeneUtakmice)
+    .enter()
+    .append("text")
+    .html(function(d){return d.name + "<br>";});
+    porazi = true;
+    pobjede = false;
+    nerjeseno = false;
+  };
+
+
+});
+
+</script>
+</body>
+</html>

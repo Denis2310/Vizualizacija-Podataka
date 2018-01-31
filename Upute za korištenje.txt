@@ -1,0 +1,10 @@
+*************************************UPUTE ZA KORIŠTENJE*****************************************
+
+- Projekt se otvara klikom na html datoteku leicesterprojekt.html
+- Otvaranjem te dadoteke dobiva se prikaz velikog "Pie Chart" dijagrama gdje je vidljiv okvirni prikaz odnosa izmeðu pobjeda, poraza
+i nerješenih utakmica navedenog kluba u protekloj sezoni.
+- Klikom na segment nerješenih utakmica, uz rezultate prikazuje se i gumb koji vodi na simulaciju jedne od utakmica koja je završila 
+nerješenim rezultatom.
+- Oblikovanje projekta izvršeno je u css datoteci style.css
+- U folderu slike nalaze se slike korištene u projektu, odnosno pozadina projekta i teren simulacije.
+- Dokumentacija je priložena u file-u Dokumentacija.docx
